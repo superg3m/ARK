@@ -12,7 +12,7 @@ Make a game from scratch using mostly C and very few libraries
 4. Develope and API to be used in future endeavours.
 5. Swap code entry point depending on operating system 
 6. Planning to support Windows, Linux, Mac
-7. Using XInput for controller input however will look into DirectionInput1
+7. Using XInput for controller input however will look into DirectionInput
 8. Optimizing for performance reasons
 
 ## Requirements
