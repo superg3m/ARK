@@ -1,0 +1,19 @@
+---
+Language: Cpp
+BasedOnStyle: LLVM
+IndentWidth: 4
+UseTab: false
+ColumnLimit: 80
+BreakBeforeBraces: Linux
+
+BraceWrapping:
+  AfterFunction: false
+  AfterStruct: true
+  AfterCaseLabel: true
+
+AlignAfterOpenBracket: true 
+AlignConsecutiveAssignments: true
+PointerAlignment: Left
+ReferenceAlignment: Right  # Set reference alignment to Right
+IndentCaseLabels: true
+AllowShortFunctionsOnASingleLine: None

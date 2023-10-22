@@ -1,0 +1,16 @@
+{
+    "editor.defaultFormatter": "xaver.clang-format",
+    "C_Cpp.clang_format_path": "C:\\Users\\super\\OneDrive\\Desktop\\Code Projects\\vscode\\Cpp projects\\GameFromScratch\\Misc\\.clang-format",
+    "C_Cpp.clang_format_fallbackStyle": "\"\"",
+    "C_Cpp.codeAnalysis.clangTidy.codeAction.formatFixes": false,
+    "C_Cpp.formatting": "clangFormat",
+    "C_Cpp.clang_format_style": "file",
+    "[cpp]": {
+        "editor.defaultFormatter": "xaver.clang-format"
+    },
+    "C_Cpp.errorSquiggles": "enabled",
+    "files.associations": {
+        "cstdint": "cpp",
+        "typeinfo": "cpp"
+    }
+}
