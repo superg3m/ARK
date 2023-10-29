@@ -1,3 +1,9 @@
+/*
+ * File: Win32_EntryPoint.h
+ * Date: October 29, 2023
+ * Creator: Jovanni Djonaj
+ */
+
 #include <stdint.h>
 #include <stdio.h>
 #include <windows.h>
