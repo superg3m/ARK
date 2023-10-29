@@ -3,7 +3,7 @@ Language: Cpp
 BasedOnStyle: LLVM
 IndentWidth: 4
 UseTab: false
-ColumnLimit: 80
+ColumnLimit: 120
 BreakBeforeBraces: Linux
 
 BraceWrapping:
