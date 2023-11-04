@@ -1,8 +1,10 @@
 /*
+===========================================================
  * File: Win32_EntryPoint.cpp
  * Date: October 20, 2023
  * Creator: Jovanni Djonaj
- */
+===========================================================
+*/
 
 #include "../Header/Win32_EntryPoint.h"
 
@@ -14,16 +16,40 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 
     registerWindowClass(instance, windowClassName);
 
-    HWND handle = CreateWindowA(windowClassName, "Inscription Window", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
-                                CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, instance, 0);
+    HWND windowHandle = CreateWindowA(windowClassName, "Inscription Window", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
+                                      CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, instance, 0);
 
-    SetFocus(handle);
-    ShowWindow(handle, windowShowCode);
+    if (!windowHandle) {
+        return -1;
+    }
+
+    uint8 xOffset = 0;
+    uint8 yOffset = 0;
+
+    Win32_soundOutput soundOutput   = {};
+    soundOutput.samplesPerSecond    = 48000;
+    soundOutput.hz                  = 256; // cycles per second
+    soundOutput.volume              = 2000;
+    soundOutput.runningSampleIndex  = 0;
+    soundOutput.WavePeriod          = soundOutput.samplesPerSecond / soundOutput.hz;
+    soundOutput.bytesPerSample      = sizeof(int32);
+    soundOutput.secondaryBufferSize = soundOutput.samplesPerSecond * soundOutput.bytesPerSample;
+
+    Win32_InitDirectSound(windowHandle, soundOutput.samplesPerSecond, soundOutput.secondaryBufferSize);
+    Win32_FillSoundBuffer(&soundOutput, 0, soundOutput.secondaryBufferSize);
+    secondaryBuffer->Play(0, 0, DSBPLAY_LOOPING);
+    DSBCAPS dsbCaps;
+    dsbCaps.dwSize   = sizeof(DSBCAPS);
+    HRESULT value    = secondaryBuffer->GetCaps(&dsbCaps);
+    DWORD bufferSize = dsbCaps.dwBufferBytes;
+
+    SetFocus(windowHandle);
+    ShowWindow(windowHandle, windowShowCode);
     windowIsRunning = true;
 
     MSG Win32_Message = {};
     while (windowIsRunning) {
-        while (PeekMessageA(&Win32_Message, handle, 0, 0, PM_REMOVE)) {
+        while (PeekMessageA(&Win32_Message, windowHandle, 0, 0, PM_REMOVE)) {
             if (Win32_Message.message == WM_QUIT) {
                 windowIsRunning = false;
             }
@@ -82,22 +108,45 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
                 // NOTE(Jovanni): Controller is not available
             }
         }
-        // xOffset++;
-        // yOffset++;
+        xOffset++;
+        yOffset++;
 
         XINPUT_VIBRATION controllerVibrations = {};
         // controllerVibrations.wLeftMotorSpeed  = 6000;
         // controllerVibrations.wRightMotorSpeed = 6000;
         XInputSetState(0, &controllerVibrations);
 
-        HDC deviceContext = GetDC(handle);
+        HDC deviceContext = GetDC(windowHandle);
 
-        Win32_WindowDimensions dimension = Win32_GetDimensions(handle);
+        Win32_WindowDimensions dimension = Win32_GetDimensions(windowHandle);
+
+        DWORD playCursorPosition;
+        DWORD writeCursorPosition;
+        if (SUCCEEDED(secondaryBuffer->GetCurrentPosition(&playCursorPosition, &writeCursorPosition))) {
+
+            DWORD bytesToLock =
+                ((soundOutput.runningSampleIndex * soundOutput.bytesPerSample) % soundOutput.secondaryBufferSize);
+            DWORD bytesToWrite = 0;
+
+            if (bytesToLock == playCursorPosition) {
+                // bytesToWrite = 0;
+
+            } else if (bytesToLock > playCursorPosition) {
+                bytesToWrite = soundOutput.secondaryBufferSize - bytesToLock;
+                bytesToWrite += playCursorPosition;
+            } else {
+                bytesToWrite = playCursorPosition - bytesToLock;
+            }
+
+            // LEFT RIGHT LEFT RIGHT [LEFT, RIGHT] <- one sample is a pair of LEFT and RIGHT
+
+            Win32_FillSoundBuffer(&soundOutput, bytesToLock, bytesToWrite);
+        }
 
         Win32_DisplayBufferToWindow(&bitBuffer, deviceContext, dimension.width, dimension.height);
 
         Win32_RenderBitmap(&bitBuffer, xOffset, yOffset);
-        ReleaseDC(handle, deviceContext);
+        ReleaseDC(windowHandle, deviceContext);
         // xOffset++;
         // yOffset++;
     }
