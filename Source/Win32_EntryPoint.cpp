@@ -9,6 +9,8 @@
 
 int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLine, int windowShowCode)
 {
+    // TODO(Jovanni): FIX EVERYTHING ELSE!!!
+    // ALSO BE AWARE Win32_Window is almsot guaranteed to be broken
     Win32_XInput xInputSystem;
 
     Win32_ResizeDIBSection(&bitBuffer, 1200, 700);
