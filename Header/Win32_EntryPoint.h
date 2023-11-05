@@ -1,19 +1,18 @@
-/*
-===========================================================
+/*===========================================================
  * File: Win32_EntryPoint.h
  * Date: October 29, 2023
  * Creator: Jovanni Djonaj
-===========================================================
-*/
+===========================================================*/
 
 #pragma once
 
+#include "./Win32_Window.h"
+#include "./Win32_XInput.h"
 #include <dsound.h>
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <windows.h>
-#include <xinput.h>
 
 #define internal static
 #define local_persist static
@@ -39,11 +38,6 @@ struct Win32_BitmapBuffer {
     int height;
 };
 
-struct Win32_WindowDimensions {
-    int width;
-    int height;
-};
-
 struct Win32_soundOutput {
     int samplesPerSecond;
     int hz;
@@ -60,24 +54,6 @@ struct Win32_soundOutput {
 
 const float PI = 3.14159265359f;
 
-// NOTE(Jovanni): XInput
-#define X_INPUT_GET_STATE(name) DWORD name(DWORD, XINPUT_STATE*)
-#define X_INPUT_SET_STATE(name) DWORD name(DWORD, XINPUT_VIBRATION*)
-typedef X_INPUT_GET_STATE(x_input_get_state);
-typedef X_INPUT_SET_STATE(x_input_set_state);
-
-#define XInputGetState XInputGetState_
-#define XInputSetState XInputSetState_
-
-DWORD Win32_XInputGetStateStub(DWORD, XINPUT_STATE*)
-{
-    return ERROR_DEVICE_NOT_CONNECTED;
-}
-DWORD Win32_XInputSetStateStub(DWORD, XINPUT_VIBRATION*)
-{
-    return ERROR_DEVICE_NOT_CONNECTED;
-}
-
 // NOTE(Jovanni): DirectSound
 #define DIRECT_SOUND_CREATE(name) HRESULT WINAPI name(LPCGUID lpGUID, LPDIRECTSOUND* ppDS, LPUNKNOWN pUnkOuter)
 typedef DIRECT_SOUND_CREATE(direct_sound_create);
@@ -86,54 +62,14 @@ typedef DIRECT_SOUND_CREATE(direct_sound_create);
 // Win32_EntryPoint Globals
 // ===========================================================
 
-global_variable x_input_get_state* XInputGetState = Win32_XInputGetStateStub;
-global_variable x_input_set_state* XInputSetState = Win32_XInputSetStateStub;
-
 global_variable bool windowIsRunning = false;
 global_variable Win32_BitmapBuffer bitBuffer;
 global_variable LPDIRECTSOUNDBUFFER secondaryBuffer;
+global_variable Win32_Window* window = nullptr;
 
 // ===========================================================
 // Win32_EntryPoint Functions
 // ===========================================================
-
-/**
- * @brief get the currentWindowDimensions
- *
- * @param handle
- * @return Win32_WindowDimensions
- */
-Win32_WindowDimensions Win32_GetDimensions(HWND handle)
-{
-    Win32_WindowDimensions ret;
-    RECT clientRect = {};
-    GetClientRect(handle, &clientRect);
-
-    ret.width  = clientRect.right - clientRect.left;
-    ret.height = clientRect.bottom - clientRect.top;
-
-    return ret;
-}
-
-/**
- * @brief Load the xinput dll at runtime
- *
- * @return void
- */
-internal void Win32_LoadXInput()
-{
-    HMODULE XInputLibrary;
-    XInputLibrary = LoadLibraryA("xinput1_4.dll");
-    if (!XInputLibrary) {
-        XInputLibrary = LoadLibraryA("xinput1_3.dll");
-    }
-
-    if (XInputLibrary) {
-        XInputGetState = (x_input_get_state*)GetProcAddress(XInputLibrary, "XInputGetState");
-
-        XInputSetState = (x_input_set_state*)GetProcAddress(XInputLibrary, "XInputSetState");
-    }
-}
 
 /**
  * @brief Initalize the DirectSound Library
@@ -340,7 +276,7 @@ internal LRESULT Win32_WindowProc(HWND handle, UINT message, WPARAM wParam, LPAR
             PAINTSTRUCT paint;
             HDC deviceContext = BeginPaint(handle, &paint);
 
-            Win32_WindowDimensions dimension = Win32_GetDimensions(handle);
+            Win32_WindowDimensions dimension = window->getDimensions(handle);
 
             Win32_DisplayBufferToWindow(&bitBuffer, deviceContext, dimension.width, dimension.height);
 

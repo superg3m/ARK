@@ -17,3 +17,4 @@ PointerAlignment: Left
 ReferenceAlignment: Right  # Set reference alignment to Right
 IndentCaseLabels: true
 AllowShortFunctionsOnASingleLine: None
+NamespaceIndentation: All 

@@ -4,5 +4,5 @@ if not exist .\Build (
     mkdir .\Build"
 )
 pushd .\Build
-cl /Zi ..\Source\*.cpp user32.lib Gdi32.lib
+cl /Fe: Win32_EntryPoint.exe /Zi ..\Source\*.cpp user32.lib Gdi32.lib
 popd

@@ -1,20 +1,23 @@
-/*
-===========================================================
+
+/*===========================================================
  * File: Win32_EntryPoint.cpp
  * Date: October 20, 2023
  * Creator: Jovanni Djonaj
-===========================================================
-*/
+===========================================================*/
 
 #include "../Header/Win32_EntryPoint.h"
 
 int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLine, int windowShowCode)
 {
-    Win32_LoadXInput();
+    Win32_XInput xInputSystem;
+
     Win32_ResizeDIBSection(&bitBuffer, 1200, 700);
     const char* windowClassName = "Inscription";
 
-    registerWindowClass(instance, windowClassName);
+    window            = new Win32_Window(instance, Win32_WindowProc, windowClassName);
+    window->isRunning = true;
+
+    // registerWindowClass(instance, "Inscription Window");
 
     HWND windowHandle = CreateWindowA(windowClassName, "Inscription Window", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
                                       CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, instance, 0);
@@ -29,7 +32,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
     Win32_soundOutput soundOutput   = {};
     soundOutput.samplesPerSecond    = 48000;
     soundOutput.hz                  = 256; // cycles per second
-    soundOutput.volume              = 2000;
+    soundOutput.volume              = 3000;
     soundOutput.runningSampleIndex  = 0;
     soundOutput.WavePeriod          = soundOutput.samplesPerSecond / soundOutput.hz;
     soundOutput.bytesPerSample      = sizeof(int32);
@@ -62,7 +65,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
         for (int controllerIndex = 0; controllerIndex < XUSER_MAX_COUNT; controllerIndex++) {
             XINPUT_STATE controllerState;
 
-            if (XInputGetState(controllerIndex, &controllerState) == ERROR_SUCCESS) {
+            if (xInputSystem.XInput_Get_State(controllerIndex, &controllerState) == ERROR_SUCCESS) {
                 // NOTE(Jovanni): Controller is plugged in
                 XINPUT_GAMEPAD* pad = &controllerState.Gamepad;
                 WORD inputMask      = pad->wButtons;
@@ -114,11 +117,11 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
         XINPUT_VIBRATION controllerVibrations = {};
         // controllerVibrations.wLeftMotorSpeed  = 6000;
         // controllerVibrations.wRightMotorSpeed = 6000;
-        XInputSetState(0, &controllerVibrations);
+        xInputSystem.XInput_Set_State(0, &controllerVibrations);
 
         HDC deviceContext = GetDC(windowHandle);
 
-        Win32_WindowDimensions dimension = Win32_GetDimensions(windowHandle);
+        Win32_WindowDimensions dimension = window->getDimensions(windowHandle);
 
         DWORD playCursorPosition;
         DWORD writeCursorPosition;
@@ -128,10 +131,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
                 ((soundOutput.runningSampleIndex * soundOutput.bytesPerSample) % soundOutput.secondaryBufferSize);
             DWORD bytesToWrite = 0;
 
-            if (bytesToLock == playCursorPosition) {
-                // bytesToWrite = 0;
-
-            } else if (bytesToLock > playCursorPosition) {
+            if (bytesToLock > playCursorPosition) {
                 bytesToWrite = soundOutput.secondaryBufferSize - bytesToLock;
                 bytesToWrite += playCursorPosition;
             } else {
