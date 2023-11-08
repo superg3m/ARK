@@ -11,7 +11,10 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 {
     // TODO(Jovanni): FIX EVERYTHING ELSE!!!
     // ALSO BE AWARE Win32_Window is almsot guaranteed to be broken
-    Win32_XInput xInputSystem;
+
+    // DON'T use classes swap to structs and just seperate the functions to the right files
+
+    Win32_XInput xInputSystem = create_XInput(); // Function to initialize XinputSystem
 
     Win32_ResizeDIBSection(&bitBuffer, 1200, 700);
     const char* windowClassName = "Inscription";
@@ -117,8 +120,8 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
         yOffset++;
 
         XINPUT_VIBRATION controllerVibrations = {};
-        // controllerVibrations.wLeftMotorSpeed  = 6000;
-        // controllerVibrations.wRightMotorSpeed = 6000;
+        controllerVibrations.wLeftMotorSpeed  = 6000;
+        controllerVibrations.wRightMotorSpeed = 6000;
         xInputSystem.XInput_Set_State(0, &controllerVibrations);
 
         HDC deviceContext = GetDC(windowHandle);
