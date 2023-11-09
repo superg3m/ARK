@@ -17,15 +17,16 @@ DWORD XInputSetStateStub(DWORD, XINPUT_VIBRATION*)
 
 /**
  * @brief Create a XInput object
- * 
- * @return Win32_XInput 
+ *
+ * @return Win32_XInput
  */
 Win32_XInput create_XInput()
 {
     // clang-format off
-    Win32_XInput XInput;
-    XInput.XInput_Get_State = XInputGetStateStub;
-    XInput.XInput_Set_State = XInputSetStateStub;
+    Win32_XInput XInput = {
+        .XInput_Get_State = XInputGetStateStub,
+        .XInput_Set_State = XInputSetStateStub
+    };
     // clang-format on
 
     LoadXInput(&XInput);

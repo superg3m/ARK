@@ -16,8 +16,8 @@ typedef DWORD Type_XInputGetState(DWORD, XINPUT_STATE*);
 typedef DWORD Type_XInputSetState(DWORD, XINPUT_VIBRATION*);
 
 struct Win32_XInput {
-    Type_XInputGetState* XInput_Get_State = nullptr;
-    Type_XInputSetState* XInput_Set_State = nullptr;
+    Type_XInputGetState* XInput_Get_State;
+    Type_XInputSetState* XInput_Set_State;
 };
 
 internal DWORD XInputGetStateStub(DWORD, XINPUT_STATE*);
