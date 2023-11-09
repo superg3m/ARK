@@ -102,31 +102,38 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
                 int16 R_Thumb_Stick_X = pad->sThumbRX;
                 int16 R_Thumb_Stick_Y = pad->sThumbRY;
 
-                int8 normalized_right_stick_x = (L_Thumb_Stick_X >> 13) | (1 << 15);
-                int8 normalized_right_stick_y = (L_Thumb_Stick_Y >> 13) | (1 << 15);
+                int8 stick_x = R_Thumb_Stick_X;
+                int8 stick_y = R_Thumb_Stick_Y;
 
-                if (normalized_right_stick_x) {
-                    xOffset += normalized_right_stick_x;
+                soundOutput.hz         = 256 + (int)(256.0f * ((float)(stick_y / 3000.0f)));
+                soundOutput.WavePeriod = soundOutput.samplesPerSecond / soundOutput.hz;
+
+                if (stick_x) {
+                    xOffset += stick_x >> 10;
                 }
-                if (normalized_right_stick_y) {
-                    yOffset += normalized_right_stick_y;
+                if (stick_y) {
+                    yOffset += stick_y >> 10;
                 }
 
             } else {
                 // NOTE(Jovanni): Controller is not available
             }
         }
-        xOffset++;
-        yOffset++;
+        // xOffset++;
+        // yOffset++;
 
         XINPUT_VIBRATION controllerVibrations = {};
-        controllerVibrations.wLeftMotorSpeed  = 6000;
-        controllerVibrations.wRightMotorSpeed = 6000;
+        // controllerVibrations.wLeftMotorSpeed  = 6000;
+        // controllerVibrations.wRightMotorSpeed = 6000;
         xInputSystem.xinput_state_set(0, &controllerVibrations);
 
         HDC deviceContext = GetDC(windowHandle);
 
         Win32_WindowDimensions dimension = window->getDimensions(windowHandle);
+
+        Win32_DisplayBufferToWindow(&bitBuffer, deviceContext, dimension.width, dimension.height);
+
+        Win32_RenderBitmap(&bitBuffer, xOffset, yOffset);
 
         DWORD playCursorPosition;
         DWORD writeCursorPosition;
@@ -148,12 +155,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
             Win32_FillSoundBuffer(&soundOutput, bytesToLock, bytesToWrite);
         }
 
-        Win32_DisplayBufferToWindow(&bitBuffer, deviceContext, dimension.width, dimension.height);
-
-        Win32_RenderBitmap(&bitBuffer, xOffset, yOffset);
         ReleaseDC(windowHandle, deviceContext);
-        // xOffset++;
-        // yOffset++;
     }
 
     return 0;

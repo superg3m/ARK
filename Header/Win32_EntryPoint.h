@@ -46,6 +46,7 @@ struct Win32_soundOutput {
     int WavePeriod;
     int bytesPerSample;
     int secondaryBufferSize;
+    float tsine;
 };
 
 // ===========================================================
@@ -327,26 +328,25 @@ internal void Win32_FillSoundBuffer(Win32_soundOutput* soundOutput, DWORD bytesT
         DWORD regionOneSampleCount = regionOneSize / soundOutput->bytesPerSample;
         int16* sampleOut           = (int16*)regionOne;
         for (DWORD sampleIndex = 0; sampleIndex < regionOneSampleCount; sampleIndex++) {
-            float time        = 2.0f * PI * (float)soundOutput->runningSampleIndex / (float)soundOutput->WavePeriod;
-            float sineValue   = sinf(time);
+
+            float sineValue   = sinf(soundOutput->tsine);
             int16 sampleValue = (int16)(soundOutput->volume * sineValue);
             *sampleOut++      = sampleValue; // Left positive values
             *sampleOut++      = sampleValue; // Right negative values
+            soundOutput->tsine += (2.0f * PI) / (float)soundOutput->WavePeriod;
             soundOutput->runningSampleIndex++;
         }
 
         DWORD regionTwoSampleCount = regionTwoSize / soundOutput->bytesPerSample;
         sampleOut                  = (int16*)regionTwo;
         for (DWORD sampleIndex = 0; sampleIndex < regionTwoSampleCount; sampleIndex++) {
-            float time        = 2.0f * PI * (float)soundOutput->runningSampleIndex / (float)soundOutput->WavePeriod;
-            float sineValue   = sinf(time);
+            float sineValue   = sinf(soundOutput->tsine);
             int16 sampleValue = (int16)(soundOutput->volume * sineValue);
             *sampleOut++      = sampleValue; // Left positive values
             *sampleOut++      = sampleValue; // Right negative values
+            soundOutput->tsine += (2.0f * PI) / (float)soundOutput->WavePeriod;
             soundOutput->runningSampleIndex++;
         }
         secondaryBuffer->Unlock(regionOne, regionOneSize, regionTwo, regionTwoSize);
-    } else {
-        OutputDebugStringA("FAILED TO FILL SECONDARY BUFFER\n");
     }
 }
