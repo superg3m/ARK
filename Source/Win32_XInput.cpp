@@ -6,11 +6,11 @@
 
 #include "../Header/Win32_XInput.h"
 
-DWORD XInputGetStateStub(DWORD, XINPUT_STATE*)
+DWORD ark_xinput_get_state_stub(DWORD, XINPUT_STATE*)
 {
     return ERROR_DEVICE_NOT_CONNECTED;
 }
-DWORD XInputSetStateStub(DWORD, XINPUT_VIBRATION*)
+DWORD ark_xinput_set_state_stub(DWORD, XINPUT_VIBRATION*)
 {
     return ERROR_DEVICE_NOT_CONNECTED;
 }
@@ -20,16 +20,16 @@ DWORD XInputSetStateStub(DWORD, XINPUT_VIBRATION*)
  *
  * @return Win32_XInput
  */
-Win32_XInput create_XInput()
+Win32_XInput ark_xinput_create()
 {
     // clang-format off
     Win32_XInput XInput = {
-        .XInput_Get_State = XInputGetStateStub,
-        .XInput_Set_State = XInputSetStateStub
+        .xinput_state_get = ark_xinput_get_state_stub,
+        .xinput_state_set = ark_xinput_set_state_stub
     };
     // clang-format on
 
-    LoadXInput(&XInput);
+    ark_xinput_load(&XInput);
 
     return XInput;
 }
@@ -39,7 +39,7 @@ Win32_XInput create_XInput()
  *
  * @return void
  */
-void LoadXInput(Win32_XInput* xInput)
+void ark_xinput_load(Win32_XInput* xInput)
 {
     HMODULE XInputLibrary;
     XInputLibrary = LoadLibraryA("xinput1_4.dll");
@@ -48,7 +48,7 @@ void LoadXInput(Win32_XInput* xInput)
     }
 
     if (XInputLibrary) {
-        xInput->XInput_Get_State = (Type_XInputGetState*)GetProcAddress(XInputLibrary, "XInputGetState");
-        xInput->XInput_Set_State = (Type_XInputSetState*)GetProcAddress(XInputLibrary, "XInputSetState");
+        xInput->xinput_state_get = (Type_XInputGetState*)GetProcAddress(XInputLibrary, "XInputGetState");
+        xInput->xinput_state_set = (Type_XInputSetState*)GetProcAddress(XInputLibrary, "XInputSetState");
     }
 }

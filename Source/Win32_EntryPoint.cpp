@@ -14,7 +14,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 
     // DON'T use classes swap to structs and just seperate the functions to the right files
 
-    Win32_XInput xInputSystem = create_XInput(); // Function to initialize XinputSystem
+    Win32_XInput xInputSystem = ark_xinput_create(); // Function to initialize XinputSystem
 
     Win32_ResizeDIBSection(&bitBuffer, 1200, 700);
     const char* windowClassName = "Inscription";
@@ -70,7 +70,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
         for (int controllerIndex = 0; controllerIndex < XUSER_MAX_COUNT; controllerIndex++) {
             XINPUT_STATE controllerState;
 
-            if (xInputSystem.XInput_Get_State(controllerIndex, &controllerState) == ERROR_SUCCESS) {
+            if (xInputSystem.xinput_state_get(controllerIndex, &controllerState) == ERROR_SUCCESS) {
                 // NOTE(Jovanni): Controller is plugged in
                 XINPUT_GAMEPAD* pad = &controllerState.Gamepad;
                 WORD inputMask      = pad->wButtons;
@@ -122,7 +122,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
         XINPUT_VIBRATION controllerVibrations = {};
         controllerVibrations.wLeftMotorSpeed  = 6000;
         controllerVibrations.wRightMotorSpeed = 6000;
-        xInputSystem.XInput_Set_State(0, &controllerVibrations);
+        xInputSystem.xinput_state_set(0, &controllerVibrations);
 
         HDC deviceContext = GetDC(windowHandle);
 

@@ -1,5 +1,11 @@
-# My Generative AI Project
+# The Arkagen or Ark for short
 
+ █████╗  ██████╗  ██╗  ██╗
+██╔══██╗ ██╔══██╗ ██║ ██╔╝
+███████║ ██████╔╝ █████╔╝ 
+██╔══██║ ██╔══██╗ ██╔═██╗ 
+██║  ██║ ██║  ██║ ██║  ██╗
+       
 ## Description
 
 Make a game from scratch using mostly C and very few libraries
