@@ -6,8 +6,5 @@
 
 #pragma once
 
-class Win32_Renderer
-{
-  public:
-    void testing();
+struct Win32_Renderer {
 };

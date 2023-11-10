@@ -137,7 +137,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
         HDC deviceContext = GetDC(windowHandle);
 
         Win32_WindowDimensions dimension = window->getDimensions(windowHandle);
-
+        
         Win32_DisplayBufferToWindow(&bitBuffer, deviceContext, dimension.width, dimension.height);
 
         Win32_RenderBitmap(&bitBuffer, xOffset, yOffset);

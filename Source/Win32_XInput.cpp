@@ -48,7 +48,7 @@ void ark_xinput_load(Win32_XInput* xInput)
     }
 
     if (XInputLibrary) {
-        xInput->xinput_state_get = (Type_XInputGetState*)GetProcAddress(XInputLibrary, "XInputGetState");
-        xInput->xinput_state_set = (Type_XInputSetState*)GetProcAddress(XInputLibrary, "XInputSetState");
+        xInput->xinput_state_get = (func_XInputGetState*)GetProcAddress(XInputLibrary, "XInputGetState");
+        xInput->xinput_state_set = (func_XInputSetState*)GetProcAddress(XInputLibrary, "XInputSetState");
     }
 }

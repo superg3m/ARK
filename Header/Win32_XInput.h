@@ -12,13 +12,13 @@
 #define internal static
 
 // Define the function pointer types
-typedef DWORD Type_XInputGetState(DWORD, XINPUT_STATE*);
-typedef DWORD Type_XInputSetState(DWORD, XINPUT_VIBRATION*);
+typedef DWORD func_XInputGetState(DWORD, XINPUT_STATE*);
+typedef DWORD func_XInputSetState(DWORD, XINPUT_VIBRATION*);
 
 // TODO(Jovanni): Remove these function pointers I think
 struct Win32_XInput {
-    Type_XInputGetState* xinput_state_get;
-    Type_XInputSetState* xinput_state_set;
+    func_XInputGetState* xinput_state_get;
+    func_XInputSetState* xinput_state_set;
 };
 
 // NOTE(Jovanni): Template -> inscription_object_operation_data
