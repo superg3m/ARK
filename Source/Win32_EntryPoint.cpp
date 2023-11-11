@@ -7,6 +7,11 @@
 
 #include "../Header/Win32_EntryPoint.h"
 
+extern Win32_Window* window;
+extern Win32_BitmapBuffer bitBuffer;
+extern Win32_soundOutput soundOutput;
+extern LPDIRECTSOUNDBUFFER secondaryBuffer;
+
 int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLine, int windowShowCode)
 {
     // TODO(Jovanni): FIX EVERYTHING ELSE!!!
@@ -19,10 +24,8 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
     Win32_ResizeDIBSection(&bitBuffer, 1200, 700);
     const char* windowClassName = "Inscription";
 
-    window            = new Win32_Window(instance, Win32_WindowProc, windowClassName);
+    window            = ark_window_create(instance, Win32_WindowProc, windowClassName);
     window->isRunning = true;
-
-    // registerWindowClass(instance, "Inscription Window");
 
     HWND windowHandle = CreateWindowA(windowClassName, "Inscription Window", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
                                       CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, instance, 0);
@@ -43,18 +46,19 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
     soundOutput.secondaryBufferSize = soundOutput.samplesPerSecond * soundOutput.bytesPerSample;
 
     Win32_InitDirectSound(windowHandle, soundOutput.samplesPerSecond, soundOutput.secondaryBufferSize);
+
     Win32_FillSoundBuffer(&soundOutput, 0, soundOutput.secondaryBufferSize);
     secondaryBuffer->Play(0, 0, DSBPLAY_LOOPING);
 
     SetFocus(windowHandle);
     ShowWindow(windowHandle, windowShowCode);
-    windowIsRunning = true;
+    window->isRunning = true;
 
     MSG Win32_Message = {};
-    while (windowIsRunning) {
+    while (window->isRunning) {
         while (PeekMessageA(&Win32_Message, windowHandle, 0, 0, PM_REMOVE)) {
             if (Win32_Message.message == WM_QUIT) {
-                windowIsRunning = false;
+                window->isRunning = false;
             }
 
             TranslateMessage(&Win32_Message);
@@ -142,8 +146,8 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 
             Win32_FillSoundBuffer(&soundOutput, bytesToLock, bytesToWrite);
         }
-        // xOffset++;
-        // yOffset++;
+        xOffset++;
+        yOffset++;
 
         XINPUT_VIBRATION controllerVibrations = {};
         // controllerVibrations.wLeftMotorSpeed  = 6000;
@@ -152,7 +156,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 
         HDC deviceContext = GetDC(windowHandle);
 
-        Win32_WindowDimensions dimension = window->getDimensions(windowHandle);
+        Win32_WindowDimensions dimension = ark_window_get_dimensions(windowHandle);
 
         Win32_DisplayBufferToWindow(&bitBuffer, deviceContext, dimension.width, dimension.height);
 

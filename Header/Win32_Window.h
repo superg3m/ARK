@@ -4,6 +4,10 @@
  * Creator: Jovanni Djonaj
 ===========================================================*/
 
+#pragma once
+
+#include "Types.h"
+#include "Win32_Audio.h"
 #include <windows.h>
 
 struct Win32_WindowDimensions {
@@ -11,17 +15,85 @@ struct Win32_WindowDimensions {
     int height;
 };
 
-class Win32_Window
-{
-  public:
-    bool isRunning            = false;
-    WNDPROC* Win32_WindowProc = nullptr;
-
-    Win32_Window() = delete;
-    Win32_Window(HINSTANCE instance, WNDPROC Win32_WindowProc, const char* windowClassName);
-
-    ATOM registerWindowClass(HINSTANCE instance, const char* windowClassName);
-    Win32_WindowDimensions getDimensions(HWND handle);
-
-  private:
+struct Win32_Window {
+    bool isRunning = false;
+    const char* windowClassName;
 };
+
+struct Win32_BitmapBuffer {
+    BITMAPINFO info;
+    void* memory;
+    int width;
+    int height;
+};
+
+/**
+ * @brief Creates a window
+ *
+ * @param instance
+ * @param Win32_WindowProc
+ * @param windowClassName
+ * @return Win32_Window*
+ */
+Win32_Window* ark_window_create(HINSTANCE instance, WNDPROC Win32_WindowProc, const char* windowClassName);
+
+/**
+ * @brief Registers the window class name in the WinAPI.
+ *
+ * @param instance
+ * @param windowClassName
+ * @return ATOM
+ */
+ATOM ark_window_register_class(HINSTANCE instance, const char* windowClassName);
+
+/**
+ * @brief Get the Dimensions of the window
+ *
+ * @param handle
+ * @return Win32_WindowDimensions
+ */
+Win32_WindowDimensions ark_window_get_dimensions(HWND handle);
+
+/**
+ * @brief Render the bitmap pixel by pixel.
+ *
+ * @param bitmapBuffer
+ * @param xOffset
+ * @param yOffset
+ * @return void
+ */
+void Win32_RenderBitmap(const Win32_BitmapBuffer* bitmapBuffer, const int xOffset, const int yOffset);
+
+/**
+ * @brief Resizes the Device-Independent Bitmap.
+ * This function frees the bitmap if one already exists
+ * then allocates a new one of the proper size.
+ *
+ * @param bitmapBuffer
+ * @param width
+ * @param height
+ * @return void
+ */
+void Win32_ResizeDIBSection(Win32_BitmapBuffer* bitmapBuffer, const int width, const int height);
+
+/**
+ * @brief Custom Window Procedure to handle specific behavior.
+ *
+ * @param handle
+ * @param message
+ * @param wParam
+ * @param lParam
+ * @return LRESULT
+ */
+LRESULT Win32_WindowProc(HWND handle, UINT message, WPARAM wParam, LPARAM lParam);
+
+/**
+ * @brief Display the pixel buffer the the window
+ *
+ * @param bitmapBuffer
+ * @param deviceContext
+ * @param windowWidth
+ * @param windowHeight
+ */
+void Win32_DisplayBufferToWindow(const Win32_BitmapBuffer* bitmapBuffer, HDC deviceContext, int windowWidth,
+                                 int windowHeight);
