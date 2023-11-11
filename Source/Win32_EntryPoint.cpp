@@ -14,12 +14,7 @@ extern LPDIRECTSOUNDBUFFER secondaryBuffer;
 
 int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLine, int windowShowCode)
 {
-    // TODO(Jovanni): FIX EVERYTHING ELSE!!!
-    // ALSO BE AWARE Win32_Window is almsot guaranteed to be broken
-
-    // DON'T use classes swap to structs and just seperate the functions to the right files
-
-    Win32_XInput xInputSystem = ark_xinput_create(); // Function to initialize XinputSystem
+    Win32_XInput xInputSystem = ark_xinput_create();
 
     Win32_ResizeDIBSection(&bitBuffer, 1200, 700);
     const char* windowClassName = "Inscription";
