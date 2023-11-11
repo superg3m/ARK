@@ -28,9 +28,6 @@ typedef int16_t int16;
 typedef int32_t int32;
 typedef int64_t int64;
 
-// ===========================================================
-// Win32_EntryPoint Structs
-// ===========================================================
 struct Win32_BitmapBuffer {
     BITMAPINFO info;
     void* memory;
@@ -49,9 +46,6 @@ struct Win32_soundOutput {
     float tsine;
 };
 
-// ===========================================================
-// Win32_EntryPoint Constants
-// ===========================================================
 
 const float PI = 3.14159265359f;
 
@@ -59,18 +53,16 @@ const float PI = 3.14159265359f;
 #define DIRECT_SOUND_CREATE(name) HRESULT WINAPI name(LPCGUID lpGUID, LPDIRECTSOUND* ppDS, LPUNKNOWN pUnkOuter)
 typedef DIRECT_SOUND_CREATE(direct_sound_create);
 
-// ===========================================================
-// Win32_EntryPoint Globals
-// ===========================================================
-
 global_variable bool windowIsRunning = false;
 global_variable Win32_BitmapBuffer bitBuffer;
 global_variable LPDIRECTSOUNDBUFFER secondaryBuffer;
 global_variable Win32_Window* window = nullptr;
+global_variable Win32_soundOutput soundOutput;
 
-// ===========================================================
-// Win32_EntryPoint Functions
-// ===========================================================
+// Function Prototypes
+void Win32_FillSoundBuffer(Win32_soundOutput* soundOutput, DWORD bytesToLock, DWORD bytesToWrite);
+
+
 
 /**
  * @brief Initalize the DirectSound Library
@@ -212,6 +204,7 @@ internal void Win32_DisplayBufferToWindow(const Win32_BitmapBuffer* bitmapBuffer
 internal LRESULT Win32_WindowProc(HWND handle, UINT message, WPARAM wParam, LPARAM lParam)
 {
     LRESULT result = 0;
+    uint32 VKCode  = wParam;
 
     switch (message) {
         case WM_SIZE: {
@@ -226,15 +219,67 @@ internal LRESULT Win32_WindowProc(HWND handle, UINT message, WPARAM wParam, LPAR
 
         case WM_SYSKEYDOWN:
         case WM_SYSKEYUP:
-        case WM_KEYUP:
+        case WM_KEYUP: {
+            if (VKCode == 'W') {
+                // yOffset += 25;
+                // OutputDebugStringA("W\n");
+                DWORD playCursorPosition;
+                DWORD writeCursorPosition;
+                soundOutput.hz         = 256;
+                soundOutput.WavePeriod = soundOutput.samplesPerSecond / soundOutput.hz;
+                if (SUCCEEDED(secondaryBuffer->GetCurrentPosition(&playCursorPosition, &writeCursorPosition))) {
+
+                    DWORD bytesToLock  = ((soundOutput.runningSampleIndex * soundOutput.bytesPerSample) %
+                                         soundOutput.secondaryBufferSize);
+                    DWORD bytesToWrite = 0;
+
+                    if (playCursorPosition == bytesToLock) {
+                        bytesToWrite = 0;
+                    }
+                    if (bytesToLock > playCursorPosition) {
+                        bytesToWrite = soundOutput.secondaryBufferSize - bytesToLock;
+                        bytesToWrite += playCursorPosition;
+                    } else {
+                        bytesToWrite = playCursorPosition - bytesToLock;
+                    }
+
+                    // LEFT RIGHT LEFT RIGHT [LEFT, RIGHT] <- one sample is a pair of LEFT and RIGHT
+
+                    Win32_FillSoundBuffer(&soundOutput, bytesToLock, bytesToWrite);
+                }
+            }
+        } break;
+
         case WM_KEYDOWN: {
-            uint32 VKCode = wParam;
-            bool wasDown  = ((lParam & (1 << 30)) != 0);
-            bool isDown   = ((lParam & (1 << 31)) == 0);
+            bool wasDown = ((lParam & (1 << 30)) != 0);
+            bool isDown  = ((lParam & (1 << 31)) == 0);
 
             if (VKCode == 'W') {
                 // yOffset += 25;
-                OutputDebugStringA("W\n");
+                // OutputDebugStringA("W\n");
+                soundOutput.hz         = 512;
+                soundOutput.WavePeriod = soundOutput.samplesPerSecond / soundOutput.hz;
+                DWORD playCursorPosition;
+                DWORD writeCursorPosition;
+                if (SUCCEEDED(secondaryBuffer->GetCurrentPosition(&playCursorPosition, &writeCursorPosition))) {
+
+                    DWORD bytesToLock  = ((soundOutput.runningSampleIndex * soundOutput.bytesPerSample) %
+                                         soundOutput.secondaryBufferSize);
+                    DWORD bytesToWrite = 0;
+
+                    if (playCursorPosition == bytesToLock) {
+                        bytesToWrite = 0;
+                    } else if (bytesToLock > playCursorPosition) {
+                        bytesToWrite = soundOutput.secondaryBufferSize - bytesToLock;
+                        bytesToWrite += playCursorPosition;
+                    } else {
+                        bytesToWrite = playCursorPosition - bytesToLock;
+                    }
+
+                    // LEFT RIGHT LEFT RIGHT [LEFT, RIGHT] <- one sample is a pair of LEFT and RIGHT
+
+                    Win32_FillSoundBuffer(&soundOutput, bytesToLock, bytesToWrite);
+                }
             }
             if (VKCode == 'A') {
                 // xOffset -= 25;

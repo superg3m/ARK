@@ -34,7 +34,6 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
     uint8 xOffset = 0;
     uint8 yOffset = 0;
 
-    Win32_soundOutput soundOutput   = {};
     soundOutput.samplesPerSecond    = 48000;
     soundOutput.hz                  = 256; // cycles per second
     soundOutput.volume              = 3000;
@@ -46,11 +45,6 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
     Win32_InitDirectSound(windowHandle, soundOutput.samplesPerSecond, soundOutput.secondaryBufferSize);
     Win32_FillSoundBuffer(&soundOutput, 0, soundOutput.secondaryBufferSize);
     secondaryBuffer->Play(0, 0, DSBPLAY_LOOPING);
-
-    DSBCAPS dsbCaps;
-    dsbCaps.dwSize   = sizeof(DSBCAPS);
-    HRESULT value    = secondaryBuffer->GetCaps(&dsbCaps);
-    DWORD bufferSize = dsbCaps.dwBufferBytes;
 
     SetFocus(windowHandle);
     ShowWindow(windowHandle, windowShowCode);
@@ -126,21 +120,6 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
                 // NOTE(Jovanni): Controller is not available
             }
         }
-        // xOffset++;
-        // yOffset++;
-
-        XINPUT_VIBRATION controllerVibrations = {};
-        // controllerVibrations.wLeftMotorSpeed  = 6000;
-        // controllerVibrations.wRightMotorSpeed = 6000;
-        xInputSystem.xinput_state_set(0, &controllerVibrations);
-
-        HDC deviceContext = GetDC(windowHandle);
-
-        Win32_WindowDimensions dimension = window->getDimensions(windowHandle);
-        
-        Win32_DisplayBufferToWindow(&bitBuffer, deviceContext, dimension.width, dimension.height);
-
-        Win32_RenderBitmap(&bitBuffer, xOffset, yOffset);
 
         DWORD playCursorPosition;
         DWORD writeCursorPosition;
@@ -152,8 +131,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 
             if (playCursorPosition == bytesToLock) {
                 bytesToWrite = 0;
-            }
-            if (bytesToLock > playCursorPosition) {
+            } else if (bytesToLock > playCursorPosition) {
                 bytesToWrite = soundOutput.secondaryBufferSize - bytesToLock;
                 bytesToWrite += playCursorPosition;
             } else {
@@ -164,6 +142,21 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 
             Win32_FillSoundBuffer(&soundOutput, bytesToLock, bytesToWrite);
         }
+        // xOffset++;
+        // yOffset++;
+
+        XINPUT_VIBRATION controllerVibrations = {};
+        // controllerVibrations.wLeftMotorSpeed  = 6000;
+        // controllerVibrations.wRightMotorSpeed = 6000;
+        xInputSystem.xinput_state_set(0, &controllerVibrations);
+
+        HDC deviceContext = GetDC(windowHandle);
+
+        Win32_WindowDimensions dimension = window->getDimensions(windowHandle);
+
+        Win32_DisplayBufferToWindow(&bitBuffer, deviceContext, dimension.width, dimension.height);
+
+        Win32_RenderBitmap(&bitBuffer, xOffset, yOffset);
 
         ReleaseDC(windowHandle, deviceContext);
     }

@@ -21,18 +21,12 @@ struct Win32_XInput {
     func_XInputSetState* xinput_state_set;
 };
 
-// NOTE(Jovanni): Template -> inscription_object_operation_data
-
-// TODO(Jovanni): Change function name to xinput_get_state_stub(DWORD, XINPUT_STATE*)
 internal DWORD ark_xinput_get_state_stub(DWORD, XINPUT_STATE*);
 
-// TODO(Jovanni): Change function name to xinput_set_state_stub(DWORD, XINPUT_VIBRATION*)
 internal DWORD ark_xinput_set_state_stub(DWORD, XINPUT_VIBRATION*);
 
-// TODO(Jovanni): Change function name to inscription_xinput_load()
 internal void ark_xinput_load(Win32_XInput* xInput);
 
-// TODO(Jovanni): Change function name to inscription_()
 Win32_XInput ark_xinput_create();
 
 // Functions here
