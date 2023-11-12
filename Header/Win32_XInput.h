@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "Types.h"
+#include "Base.h"
 #include <windows.h>
 #include <xinput.h>
 

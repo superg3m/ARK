@@ -14,8 +14,46 @@ extern LPDIRECTSOUNDBUFFER secondaryBuffer;
 uint8 xOffset = 0;
 uint8 yOffset = 0;
 
+struct Testing {
+    int a;
+    int b;
+    char c;
+    char d;
+};
+
+#define EvalPrintStr(x) printf("%s = %s\n", #x, (char*)x);
+#define EvalPrintInt(x) printf("%s = %d\n", #x, (int)x);
+#define EvalPrintFloat(x) printf("%s = %f\n", #x, (float)x);
+#define EvalPrintDouble(x) printf("%s = %lf\n", #x, (double)x);
+
 int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLine, int windowShowCode)
 {
+
+    EvalPrintFloat(lerp(0.0f, 4.0f, 0.4f));
+    EvalPrintFloat(abs(-12321.2323f));
+    Testing test = {4, 5, 3, 2};
+    Testing copied;
+
+    MemoryCopyStruct(&copied, &test);
+    EvalPrintInt(copied.a);
+
+    EvalPrintInt(OS_WINDOWS);
+    EvalPrintInt(OS_LINUX);
+    EvalPrintInt(OS_APPLE);
+
+    int testing[45];
+    EvalPrintInt(ArrayLength(testing));
+    EvalPrintStr(Stringify(OS_WINDOWS));
+    EvalPrintStr(Stringify(Join_String(OS_WINDOWS, TESING)));
+    EvalPrintInt(Min(56756, 6));
+    EvalPrintFloat(Max(56756.45f, 6.324f));
+    EvalPrintDouble(Clamp(1.6, 41.34, 60.234));
+
+    EvalPrintInt(offsetof(Testing, a));
+    EvalPrintInt(offsetof(Testing, b));
+    EvalPrintInt(offsetof(Testing, c));
+    EvalPrintInt(offsetof(Testing, d));
+
     Win32_XInput xInputSystem = ark_xinput_create();
 
     Win32_ResizeDIBSection(&bitBuffer, 1200, 700);

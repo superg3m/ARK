@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "Types.h"
+#include "Base.h"
 #include <dsound.h>
 #include <math.h>
 #include <stdint.h>
@@ -25,8 +25,6 @@ struct Win32_soundOutput {
 };
 
 typedef HRESULT direct_sound_create(LPCGUID lpGUID, LPDIRECTSOUND* ppDS, LPUNKNOWN pUnkOuter);
-
-const float PI = 3.14159265359f;
 
 /**
  * @brief Initalize the DirectSound Library
