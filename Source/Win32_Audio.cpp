@@ -64,6 +64,7 @@ void Win32_InitDirectSound(HWND windowHandle, int32 samplesPerSecond, int32 buff
 
 void Win32_FillSoundBuffer(Win32_soundOutput* soundOutput, DWORD bytesToLock, DWORD bytesToWrite)
 {
+
     void* regionOne;
     DWORD regionOneSize;
 

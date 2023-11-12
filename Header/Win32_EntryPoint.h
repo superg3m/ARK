@@ -10,4 +10,15 @@
 #include "Win32_XInput.h"
 #include <stdio.h>
 
+/**
+ * @brief Custom Window Procedure to handle specific behavior.
+ *
+ * @param handle
+ * @param message
+ * @param wParam
+ * @param lParam
+ * @return LRESULT
+ */
+LRESULT Win32_WindowProc(HWND handle, UINT message, WPARAM wParam, LPARAM lParam);
+
 // Function Prototypes

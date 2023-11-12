@@ -6,10 +6,9 @@
 
 #pragma once
 
+#include "Types.h"
 #include <windows.h>
 #include <xinput.h>
-
-#define internal static
 
 // Define the function pointer types
 typedef DWORD func_XInputGetState(DWORD, XINPUT_STATE*);

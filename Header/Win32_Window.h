@@ -44,7 +44,9 @@ Win32_Window* ark_window_create(HINSTANCE instance, WNDPROC Win32_WindowProc, co
  * @param windowClassName
  * @return ATOM
  */
-ATOM ark_window_register_class(HINSTANCE instance, const char* windowClassName);
+ATOM ark_window_register_class(HINSTANCE instance,
+                               LRESULT Win32_WindowProc(HWND handle, UINT message, WPARAM wParam, LPARAM lParam),
+                               const char* windowClassName);
 
 /**
  * @brief Get the Dimensions of the window
@@ -75,17 +77,6 @@ void Win32_RenderBitmap(const Win32_BitmapBuffer* bitmapBuffer, const int xOffse
  * @return void
  */
 void Win32_ResizeDIBSection(Win32_BitmapBuffer* bitmapBuffer, const int width, const int height);
-
-/**
- * @brief Custom Window Procedure to handle specific behavior.
- *
- * @param handle
- * @param message
- * @param wParam
- * @param lParam
- * @return LRESULT
- */
-LRESULT Win32_WindowProc(HWND handle, UINT message, WPARAM wParam, LPARAM lParam);
 
 /**
  * @brief Display the pixel buffer the the window

@@ -12,6 +12,8 @@ Win32_BitmapBuffer bitBuffer;
 extern Win32_soundOutput soundOutput;
 extern LPDIRECTSOUNDBUFFER secondaryBuffer;
 
+extern uint8 yOffset;
+
 void Win32_RenderBitmap(const Win32_BitmapBuffer* bitmapBuffer, const int xOffset, const int yOffset)
 {
     uint32* pixel = (uint32*)bitmapBuffer->memory;
@@ -61,100 +63,9 @@ void Win32_DisplayBufferToWindow(const Win32_BitmapBuffer* bitmapBuffer, HDC dev
                   bitmapBuffer->memory, &bitmapBuffer->info, DIB_RGB_COLORS, SRCCOPY);
 }
 
-LRESULT Win32_WindowProc(HWND handle, UINT message, WPARAM wParam, LPARAM lParam)
-{
-    LRESULT result = 0;
-    uint32 VKCode  = wParam;
-
-    switch (message) {
-        case WM_SIZE: {
-
-        } break;
-
-        case WM_CLOSE: {
-            window->isRunning = false;
-        } break;
-
-        case WM_DESTROY:
-
-        case WM_SYSKEYDOWN:
-        case WM_SYSKEYUP:
-        case WM_KEYUP: {
-            if (VKCode == 'W') {
-                // yOffset += 25;
-                // OutputDebugStringA("W\n");
-                soundOutput.hz         = 256;
-                soundOutput.WavePeriod = soundOutput.samplesPerSecond / soundOutput.hz;
-            }
-        } break;
-
-        case WM_KEYDOWN: {
-            bool wasDown = ((lParam & (1 << 30)) != 0);
-            bool isDown  = ((lParam & (1 << 31)) == 0);
-
-            if (VKCode == 'W') {
-                // yOffset += 25;
-                soundOutput.hz         = 512;
-                soundOutput.WavePeriod = soundOutput.samplesPerSecond / soundOutput.hz;
-                OutputDebugStringA("W\n");
-            }
-            if (VKCode == 'A') {
-                // xOffset -= 25;
-                OutputDebugStringA("A\n");
-            } else if (VKCode == 'S') {
-                // yOffset -= 25;
-                OutputDebugStringA("S\n");
-            } else if (VKCode == 'D') {
-                // xOffset += 25;
-                OutputDebugStringA("D\n");
-            } else if (VKCode == 'Q') {
-                OutputDebugStringA("Q\n");
-            } else if (VKCode == 'E') {
-                OutputDebugStringA("E\n");
-            } else if (VKCode == VK_UP) {
-                OutputDebugStringA("E\n");
-            } else if (VKCode == VK_DOWN) {
-                OutputDebugStringA("DOWN\n");
-            } else if (VKCode == VK_LEFT) {
-                OutputDebugStringA("LEFT\n");
-            } else if (VKCode == VK_RIGHT) {
-                OutputDebugStringA("RIGHT\n");
-            } else if (VKCode == VK_SHIFT) {
-                OutputDebugStringA("SHIFT\n");
-            } else if (VKCode == VK_SPACE) {
-                OutputDebugStringA("SPACE\n");
-            } else if (VKCode == VK_ESCAPE) {
-                OutputDebugStringA("ESCAPE\n");
-                window->isRunning = false;
-            }
-
-            bool L_AltIsPressed = (lParam & (1 << 29)) != 0;
-            if (L_AltIsPressed && VKCode == VK_F4) {
-                window->isRunning = false;
-            }
-
-        } break;
-
-        case WM_PAINT: {
-            PAINTSTRUCT paint;
-            HDC deviceContext = BeginPaint(handle, &paint);
-
-            Win32_WindowDimensions dimension = ark_window_get_dimensions(handle);
-
-            Win32_DisplayBufferToWindow(&bitBuffer, deviceContext, dimension.width, dimension.height);
-
-            EndPaint(handle, &paint);
-        } break;
-
-        default: {
-            result = DefWindowProcA(handle, message, wParam, lParam);
-        } break;
-    }
-
-    return result;
-}
-
-ATOM ark_window_register_class(HINSTANCE instance, const char* windowClassName)
+ATOM ark_window_register_class(HINSTANCE instance,
+                               LRESULT Win32_WindowProc(HWND handle, UINT message, WPARAM wParam, LPARAM lParam),
+                               const char* windowClassName)
 {
     WNDCLASSA windowClass     = {};
     windowClass.style         = CS_OWNDC | CS_VREDRAW | CS_HREDRAW;
@@ -184,7 +95,7 @@ Win32_Window* ark_window_create(HINSTANCE instance, WNDPROC Win32_WindowProc, co
     window->isRunning       = false;
     window->windowClassName = windowClassName;
 
-    ark_window_register_class(instance, windowClassName);
+    ark_window_register_class(instance, Win32_WindowProc, windowClassName);
 
     return window;
 }
