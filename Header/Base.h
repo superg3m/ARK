@@ -92,8 +92,8 @@ const float TAU = 3.14159265359f * 2;
 #define MemoryCopyStruct(dest, source) MemoryCopy(dest, source, Min(sizeof(*dest), sizeof(*source)))
 #define MemoryCopyArray(dest, source) MemoryCopy(dest, source, Min(sizeof(dest), sizeof(source)))
 
-internal float lerp(float a, float b, float t);
-internal double lerp(double a, double b, double t);
+float lerp(float a, float b, float t);
+double lerp(double a, double b, double t);
 
 #pragma endregion
 

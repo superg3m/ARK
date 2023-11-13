@@ -5,7 +5,8 @@
 ===========================================================*/
 
 #pragma once
-#include "../Source/Base.cpp"
+
+#include "Base.h"
 #include "Win32_Audio.h"
 #include "Win32_Window.h"
 #include "Win32_XInput.h"
