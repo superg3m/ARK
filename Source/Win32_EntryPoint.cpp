@@ -6,7 +6,7 @@
 
 #include "../Header/Win32_EntryPoint.h"
 
-extern Win32_Window* window;
+extern Win32_Window window;
 extern Win32_BitmapBuffer bitBuffer;
 extern Win32_soundOutput soundOutput;
 extern LPDIRECTSOUNDBUFFER secondaryBuffer;
@@ -30,7 +30,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 {
 
     EvalPrintFloat(lerp(0.0f, 4.0f, 0.4f));
-    EvalPrintFloat(abs(-12321.2323f));
+    EvalPrintFloat(fabs(-12321.2323f));
     Testing test = {4, 5, 3, 2};
     Testing copied;
 
@@ -59,8 +59,8 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
     Win32_ResizeDIBSection(&bitBuffer, 1200, 700);
     const char* windowClassName = "Inscription";
 
-    window            = ark_window_create(instance, Win32_WindowProc, windowClassName);
-    window->isRunning = true;
+    window           = ark_window_create(instance, reinterpret_cast<WNDPROC>(Win32_WindowProc), windowClassName);
+    window.isRunning = true;
 
     HWND windowHandle = CreateWindowA(windowClassName, "Inscription Window", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
                                       CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, instance, 0);
@@ -85,10 +85,10 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
     ShowWindow(windowHandle, windowShowCode);
 
     MSG Win32_Message = {};
-    while (window->isRunning) {
+    while (window.isRunning) {
         while (PeekMessageA(&Win32_Message, windowHandle, 0, 0, PM_REMOVE)) {
             if (Win32_Message.message == WM_QUIT) {
-                window->isRunning = false;
+                window.isRunning = false;
             }
 
             TranslateMessage(&Win32_Message);
@@ -132,22 +132,27 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
                 int16 R_Thumb_Stick_X = pad->sThumbRX;
                 int16 R_Thumb_Stick_Y = pad->sThumbRY;
 
-                int8 stick_x = L_Thumb_Stick_X;
-                int8 stick_y = L_Thumb_Stick_Y;
+                int16 stick_x = L_Thumb_Stick_X;
+                int16 stick_y = L_Thumb_Stick_Y;
+
                 if (X_Button) {
                     soundOutput.hz         = 512;
                     soundOutput.WavePeriod = soundOutput.samplesPerSecond / soundOutput.hz;
-                    xOffset += 10;
+                    xOffset += 2;
                 } else {
-                    // soundOutput.hz         = 256;
-                    // soundOutput.WavePeriod = soundOutput.samplesPerSecond / soundOutput.hz;
+                    soundOutput.hz         = 256;
+                    soundOutput.WavePeriod = soundOutput.samplesPerSecond / soundOutput.hz;
                 }
 
-                if (stick_x) {
-                    // xOffset += stick_x >> 8;
+                int integer16Max = 0xFFFF;
+
+                int deadzone = integer16Max / 16;
+
+                if (abs(stick_x) > deadzone) {
+                    xOffset += stick_x >> 14;
                 }
-                if (stick_y) {
-                    // yOffset += stick_y >> 8;
+                if (abs(stick_y) > deadzone) {
+                    yOffset += stick_y >> 14;
                 }
 
             } else {
@@ -210,7 +215,7 @@ LRESULT Win32_WindowProc(HWND handle, UINT message, WPARAM wParam, LPARAM lParam
         } break;
 
         case WM_CLOSE: {
-            window->isRunning = false;
+            window.isRunning = false;
         } break;
 
         case WM_DESTROY:
@@ -255,12 +260,12 @@ LRESULT Win32_WindowProc(HWND handle, UINT message, WPARAM wParam, LPARAM lParam
                 OutputDebugStringA("SPACE\n");
             } else if (VKCode == VK_ESCAPE) {
                 OutputDebugStringA("ESCAPE\n");
-                window->isRunning = false;
+                window.isRunning = false;
             }
 
             bool L_AltIsPressed = (lParam & (1 << 29)) != 0;
             if (L_AltIsPressed && VKCode == VK_F4) {
-                window->isRunning = false;
+                window.isRunning = false;
             }
 
         } break;

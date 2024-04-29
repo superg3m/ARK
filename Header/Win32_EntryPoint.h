@@ -6,11 +6,12 @@
 
 #pragma once
 
+#include "./Win32_Audio.h"
+#include "./Win32_Window.h"
+#include "./Win32_XInput.h"
 #include "Base.h"
-#include "Win32_Audio.h"
-#include "Win32_Window.h"
-#include "Win32_XInput.h"
 #include <stdio.h>
+
 
 /**
  * @brief Custom Window Procedure to handle specific behavior.

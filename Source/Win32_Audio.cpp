@@ -29,7 +29,7 @@ void Win32_InitDirectSound(HWND windowHandle, int32 samplesPerSecond, int32 buff
             bufferDescription.dwSize       = sizeof(bufferDescription);
             bufferDescription.dwFlags      = DSBCAPS_PRIMARYBUFFER;
 
-            if (SUCCEEDED(directSound->CreateSoundBuffer(&bufferDescription, &primaryBuffer, 0))) {
+            if (SUCCEEDED(directSound->CreateSoundBuffer(&bufferDescription, &primaryBuffer, nullptr))) {
 
                 if (SUCCEEDED(primaryBuffer->SetFormat(&waveFormat))) {
                     OutputDebugStringA("Primary Buffer was set!\n");

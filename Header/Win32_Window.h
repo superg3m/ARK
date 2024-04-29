@@ -29,13 +29,12 @@ struct Win32_BitmapBuffer {
 
 /**
  * @brief Creates a window
- *
  * @param instance
  * @param Win32_WindowProc
  * @param windowClassName
- * @return Win32_Window*
+ * @return Win32_Window
  */
-Win32_Window* ark_window_create(HINSTANCE instance, WNDPROC Win32_WindowProc, const char* windowClassName);
+Win32_Window ark_window_create(HINSTANCE instance, WNDPROC Win32_WindowProc, const char* windowClassName);
 
 /**
  * @brief Registers the window class name in the WinAPI.

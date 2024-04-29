@@ -45,11 +45,6 @@ Make a game from scratch using mostly C and very few libraries
 - `debug.bat`
 
 
-### For More Data (Optional)
-
-1. `python .\PythonScripts\WebScrapper.py`
-2. `python .\PythonScripts\FormatTxtFiles.py`
-
 ## License
 
 This project is licensed under the [MIT License](LICENSE).

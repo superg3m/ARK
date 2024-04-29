@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Your Debug Configuration",
+        "type": "cppdbg",
+        "request": "launch",
+        "cwd": "${workspaceFolder}",
+        "program": "${workspaceFolder}/Build/Win32_EntryPoint.exe",
+        // ... other configuration options ...
+      }
+    ]
+  }
+  

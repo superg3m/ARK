@@ -6,7 +6,7 @@
 
 #include "../Header/Win32_window.h"
 
-Win32_Window* window;
+Win32_Window window;
 Win32_BitmapBuffer bitBuffer;
 
 extern Win32_soundOutput soundOutput;
@@ -63,9 +63,7 @@ void Win32_DisplayBufferToWindow(const Win32_BitmapBuffer* bitmapBuffer, HDC dev
                   bitmapBuffer->memory, &bitmapBuffer->info, DIB_RGB_COLORS, SRCCOPY);
 }
 
-ATOM ark_window_register_class(HINSTANCE instance,
-                               LRESULT Win32_WindowProc(HWND handle, UINT message, WPARAM wParam, LPARAM lParam),
-                               const char* windowClassName)
+ATOM ark_window_register_class(HINSTANCE instance, WNDPROC Win32_WindowProc, const char* windowClassName)
 {
     WNDCLASSA windowClass     = {};
     windowClass.style         = CS_OWNDC | CS_VREDRAW | CS_HREDRAW;
@@ -88,12 +86,12 @@ Win32_WindowDimensions ark_window_get_dimensions(HWND handle)
     return ret;
 }
 
-Win32_Window* ark_window_create(HINSTANCE instance, WNDPROC Win32_WindowProc, const char* windowClassName)
+Win32_Window ark_window_create(HINSTANCE instance, WNDPROC Win32_WindowProc, const char* windowClassName)
 {
 
-    Win32_Window* window    = (Win32_Window*)VirtualAlloc(0, sizeof(window), MEM_COMMIT, PAGE_READWRITE);
-    window->isRunning       = false;
-    window->windowClassName = windowClassName;
+    Win32_Window window    = {};
+    window.isRunning       = false;
+    window.windowClassName = windowClassName;
 
     ark_window_register_class(instance, Win32_WindowProc, windowClassName);
 
